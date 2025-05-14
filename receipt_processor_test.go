@@ -149,8 +149,16 @@ func TestCalculatePoints(t *testing.T) {
 	}
 	
 	// Retailer name "M&M Corner Market" has 13 alphanumeric characters: +13 points
-	// Expected total: 13 + 10 + 10 + 50 + 25 = 108 points
-	
+	// Expected total:
+	//     50 points - total is a round dollar amount
+	//     25 points - total is a multiple of 0.25
+	//     14 points - retailer name (M&M Corner Market) has 14 alphanumeric characters
+	//                 note: '&' is not alphanumeric
+	//     10 points - 2:33pm is between 2:00pm and 4:00pm
+	//     10 points - 4 items (2 pairs @ 5 points each)
+	//   + ---------
+	//   = 109 points
+
 	points2 := calculatePoints(receipt2)
-	assert.Equal(t, 108, points2)
+	assert.Equal(t, 109, points2)
 }
