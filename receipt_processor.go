@@ -58,18 +58,18 @@ func (rs *ReceiptStore) AddReceipt(receipt Receipt) string {
 
 	id := uuid.New().String()
 	rs.receipts[id] = receipt
-	
+
 	// Calculate points for the receipt
 	points := calculatePoints(receipt)
 	rs.points[id] = points
-	
+
 	return id
 }
 
 func (rs *ReceiptStore) GetPoints(id string) (int, bool) {
 	rs.RLock()
 	defer rs.RUnlock()
-	
+
 	points, exists := rs.points[id]
 	return points, exists
 }
@@ -97,7 +97,7 @@ func calculatePoints(receipt Receipt) int {
 	// Rule 4: 5 points for every two items on the receipt
 	points += (len(receipt.Items) / 2) * 5
 
-	// Rule 5: If the trimmed length of the item description is a multiple of 3, 
+	// Rule 5: If the trimmed length of the item description is a multiple of 3,
 	// multiply the price by 0.2 and round up to the nearest integer
 	for _, item := range receipt.Items {
 		trimmedDesc := strings.TrimSpace(item.ShortDescription)
@@ -117,9 +117,9 @@ func calculatePoints(receipt Receipt) int {
 	purchaseTime, _ := time.Parse("15:04", receipt.PurchaseTime)
 	purchaseHour := purchaseTime.Hour()
 	purchaseMinute := purchaseTime.Minute()
-	if (purchaseHour == 14 && purchaseMinute > 0) || 
-	   (purchaseHour == 15) || 
-	   (purchaseHour == 16 && purchaseMinute == 0) {
+	if (purchaseHour == 14 && purchaseMinute > 0) ||
+		(purchaseHour == 15) ||
+		(purchaseHour == 16 && purchaseMinute == 0) {
 		points += 10
 	}
 
@@ -164,7 +164,7 @@ func (rs *ReceiptStore) ProcessReceiptHandler(w http.ResponseWriter, r *http.Req
 
 	// Process receipt and generate ID
 	id := rs.AddReceipt(receipt)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(ReceiptResponse{ID: id})
